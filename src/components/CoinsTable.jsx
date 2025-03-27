@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 const CoinsTable = () => {
     const navigate = useNavigate();
     //Context API
-    const { currency } = CryptoState();
+    const { currency, symbol } = CryptoState();
     //States
     const [coins, setCoins] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -39,6 +39,12 @@ const CoinsTable = () => {
             mode: 'dark'
         }
     });
+
+    //Function to add commas to price
+    const numberWithCommas = (num) => {
+        return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");;
+    };
+
     return (
         <ThemeProvider theme={darkTheme}>
             <Container sx={{ textAlign: 'center' }}>
@@ -78,31 +84,61 @@ const CoinsTable = () => {
                                 </TableHead>
                                 <TableBody>
                                     {
-                                        handleSearch().map((coin) => (
-                                            <TableRow key={coin.id} onClick={() => navigate(`/coins/${coin.id}`)}>
-                                                <TableCell
-                                                    component='th'
-                                                    scope='row'
-                                                    style={{ display: 'flex', gap: 15, flexDirection: 'column', alignItems: 'start' }}
+                                        handleSearch().map((coin) => {
+                                            const profit = coin.price_change_percentage_24h > 0;
+                                            return (
+                                                <TableRow
+                                                    key={coin.id}
+                                                    onClick={() => navigate(`/coins/${coin.id}`)}
+                                                    sx={{
+                                                        backgroundColor: '#16171a',
+                                                        cursor: 'pointer',
+                                                        fontFamily: 'Montserrat',
+                                                        '&:hover': {
+                                                            backgroundColor: '#131111',
+                                                        },
+                                                    }}
                                                 >
-                                                    <img
-                                                        src={coin?.image}
-                                                        alt={coin.name}
-                                                        height='50'
-                                                        style={{ marginBottom: '5px' }}
-                                                    />
-                                                    <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                                        <span style={{ textTransform: 'uppercase', fontSize: '22px' }}>
-                                                            {coin.symbol}
-                                                        </span>
-                                                        <span style={{ color: 'darkgrey' }}>{coin.name}</span>
-                                                    </div>
-                                                </TableCell>
-                                                <TableCell align='right' style={{ fontWeight: 500 }}>{coin.current_price}</TableCell>
-                                                <TableCell>{coin.market_cap_change_percentage_24h.toFixed(2)}</TableCell>
-                                                <TableCell>{coin.market_cap}</TableCell>
-                                            </TableRow>
-                                        ))
+                                                    <TableCell
+                                                        component='th'
+                                                        scope='row'
+                                                        style={{ display: 'flex', gap: 15 }}
+                                                    >
+                                                        <img
+                                                            src={coin?.image}
+                                                            alt={coin.name}
+                                                            height='50'
+                                                            style={{ marginBottom: 10 }}
+                                                        />
+                                                        <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                                            <span style={{ textTransform: 'uppercase', fontSize: '22px' }}>
+                                                                {coin.symbol}
+                                                            </span>
+                                                            <span style={{ color: 'darkgrey' }}>{coin.name}</span>
+                                                        </div>
+                                                    </TableCell>
+                                                    <TableCell
+                                                        align='right'
+                                                        style={{ fontWeight: 500 }}
+                                                    >
+                                                        {symbol}{' '} {numberWithCommas(coin.current_price)}
+                                                    </TableCell>
+                                                    <TableCell
+                                                        align='right'
+                                                        style={{
+                                                            color: profit > 0 ? 'rgb(14,203,129)' : 'red', fontWeight: 500
+                                                        }}>
+                                                        {profit && '+'} {coin.price_change_percentage_24h.toFixed(2)}%
+                                                    </TableCell>
+                                                    <TableCell
+                                                        align='right'
+                                                        style={{ fontWeight: 500 }}
+                                                    >
+                                                        {numberWithCommas(coin.market_cap.toString().slice(0, -6))}M
+                                                    </TableCell>
+                                                </TableRow>
+                                            );
+                                        })
                                     }
                                 </TableBody>
                             </Table>
@@ -110,7 +146,7 @@ const CoinsTable = () => {
                     }
                 </TableContainer>
             </Container>
-        </ThemeProvider>
+        </ThemeProvider >
     );
 };
 
