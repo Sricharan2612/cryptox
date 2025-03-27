@@ -14,7 +14,7 @@ import { Container } from '@mui/material';
 function App() {
 
   return (
-    <Container sx={{ backgroundColor: '#14161a', minHeight: '100vh', color: 'white' }}>
+    <Container maxWidth disableGutters sx={{ backgroundColor: '#14161a', minHeight: '100vh', color: 'white' }}>
       <Header />
       <Routes>
         <Route path='/' element={<HomePage />} />
