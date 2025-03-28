@@ -5,7 +5,7 @@ export const coinList = (currency) => {
 };
 
 export const singleCoin = (id) => {
-    return `https://api.coingecko.com/api/v3/coins/${id}&key=${apiKey}`;
+    return `https://api.coingecko.com/api/v3/coins/${id}?key=${apiKey}`;
 };
 
 export const historicalChart = (id, days = 365, currency) => {
